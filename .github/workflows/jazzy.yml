@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "**" ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -38,8 +41,7 @@ jobs:
           cd /ros_ws
           colcon build \
             --packages-select neo_usboard_v2 \
-            --cmake-args -DCMAKE_BUILD_TYPE=Release \
-            2>&1
+            --cmake-args -DCMAKE_BUILD_TYPE=Release
 
       - name: Check build result
         shell: bash
