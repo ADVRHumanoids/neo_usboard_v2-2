@@ -23,7 +23,7 @@ jobs:
 
       - name: Install vnx-base (Ubuntu 24.04 package)
         run: |
-          dpkg -i vnx-base/x86_64/vnx-base-1.9.6-x86_64-ubuntu-24.04.deb
+          dpkg -i vnx-base/x86_64/vnx-base-*-x86_64-ubuntu-24.04.deb
 
       - name: Install ROS 2 dependencies
         run: |
