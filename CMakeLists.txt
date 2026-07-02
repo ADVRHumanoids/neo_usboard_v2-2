@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 project(neo_usboard_v2)
 
-## By default build with code optimization and no debug info
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
@@ -22,48 +22,22 @@ find_package(neo_srvs2 REQUIRED)
 add_subdirectory(pilot-base)
 add_subdirectory(pilot-usboard)
 
-#######################################
-## Declare ROS messages and services ##
-#######################################
-
-#add_message_files(
-#  DIRECTORY msg
-#  FILES EmergencyStopState.msg
-#)
-
-## Generate added messages and services with any dependencies listed here
-#generate_messages(
-#  DEPENDENCIES std_msgs
-#)
-
-###################################
-## catkin specific configuration ##
-###################################
-
-ament_export_include_directories(generated/include)
-
-ament_export_dependencies(std_msgs neo_srvs2 tf nav_msgs sensor_msgs)
-
 ###########
 ## Build ##
 ###########
 
 file(GLOB GENERATED_SOURCE_FILES generated/src/*.cpp)
 
-include_directories(
-  generated/include
-  ${Boost_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
-)
-
 add_executable(neo_usboard_v2_node src/neo_usboard_v2_node.cpp ${GENERATED_SOURCE_FILES})
 
-ament_target_dependencies(neo_usboard_v2_node 
-rclcpp
-sensor_msgs
-std_msgs
-neo_msgs2 
-neo_srvs2
+target_include_directories(neo_usboard_v2_node PRIVATE generated/include)
+
+ament_target_dependencies(neo_usboard_v2_node
+  rclcpp
+  sensor_msgs
+  std_msgs
+  neo_msgs2
+  neo_srvs2
 )
 
 target_link_libraries(neo_usboard_v2_node pilot_usboard pilot_base vnx_base)

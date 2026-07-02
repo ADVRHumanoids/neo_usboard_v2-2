@@ -1,0 +1,49 @@
+name: ROS 2 Jazzy build
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      image: ros:jazzy-ros-base
+
+    steps:
+      - name: Checkout with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install vnx-base (Ubuntu 24.04 package)
+        run: |
+          dpkg -i vnx-base/x86_64/vnx-base-1.9.6-x86_64-ubuntu-24.04.deb
+
+      - name: Install ROS 2 dependencies
+        run: |
+          apt-get update
+          rosdep update
+          rosdep install --from-paths . --ignore-src -r -y \
+            --skip-keys "neo_msgs2 neo_srvs2 neo_common2"
+
+      - name: Build package
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          mkdir -p /ros_ws/src
+          cp -r . /ros_ws/src/neo_usboard_v2
+          cd /ros_ws
+          colcon build \
+            --packages-select neo_usboard_v2 \
+            --cmake-args -DCMAKE_BUILD_TYPE=Release \
+            2>&1
+
+      - name: Check build result
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          source /ros_ws/install/setup.bash
+          ros2 pkg list | grep neo_usboard_v2
